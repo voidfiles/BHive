@@ -4,7 +4,7 @@ jQuery(document).ready(function(){
 	test("Load Bootstrap", function() {
 		
 		stop();
-		jQuery.getScript( bh.settings.bhive_base + "framework/js/bootstrap.js", function(){
+		jQuery.getScript( "../../framework/js/bootstrap.js", function(){
 			ok( bh, "bh loaded" );
 			start();
 		});

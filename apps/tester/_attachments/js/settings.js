@@ -12,34 +12,31 @@ bh.settings = {
 	"data_uri":"http://localhost:8085/", 
 	"http_server":"http://localhost:8888/Javascript-Application-Platform/", 
 	"framework_path":"framework/",
-	"root_app_path":"/Javascript-Application-Platform/apps/testrunner/",
-	"bhive_base":"http://localhost:5984/bhive/_design/bhive/"
+	"root_app_path":"/Javascript-Application-Platform/apps/testrunner/"
 };
-var parsed_domain = document.location.href.split('/');
-//bh.settings.http_server = "http://" + parsed_domain[2] + "/" + parsed_domain[3] + "/_design/" + parsed_domain[5] +"/";
-//console.log(bh.settings.http_server);
+
 bh.settings["file_groups"] = {
 	jsapi:{
 		"js":["http://www.google.com/jsapi"],
 		"css":[]
 	},
 	jquery:{
-		"js":[bh.settings.bhive_base + "libs/jquery/jquery-1.3.2.min.js" ],
+		"js":[bh.settings.http_server + "libs/jquery/jquery-1.3.2.min.js" ],
 		"css":[]
 	},
 	jqueryui:{
-		"js":[bh.settings.bhive_base + "libs/jqueryui/js/jquery-ui-1.7.2.custom.min.js" ],
-		"css":[bh.settings.bhive_base + "libs/jqueryui/css/ui-lightness/jquery-ui-1.7.2.custom.css" ],
+		"js":[bh.settings.http_server + "libs/jqueryui/js/jquery-ui-1.7.2.custom.min.js" ],
+		"css":[bh.settings.http_server + "libs/jqueryui/css/ui-lightness/jquery-ui-1.7.2.custom.css" ],
 		"depends":["jquery"]
 
 	},
 	base: {
-		"js":[bh.settings.bhive_base + "base.js"],
-		"css":[bh.settings.bhive_base + "base.css"],
+		"js":[bh.settings.framework_path + "base.js"],
+		"css":bh.settings.framework_path + ["base.css"],
 		"depdends":["jquery"]
 	},
 	data: {
-		"js":[bh.settings.bhive_base + "data.js"],
+		"js":[bh.settings.framework_path + "data.js"],
 		"css":[],
 		"depdends":["jquery"]
 	}
