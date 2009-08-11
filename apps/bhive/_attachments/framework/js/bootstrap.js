@@ -13,8 +13,74 @@
 		}
 
 	};
-
+	
+	bh.couch_design_url = function(app_name){
+		if(this._couch_url){
+			return this._couch_url;
+		}
+		
+		if(!app_name){
+			app_name = BH_APP_NAME;
+		}
+		
+		var url = "/"+app_name +"/_design/"+app_name + "/";
+		
+		this._couch_url = url;
+		
+		return this._couch_url;
+		
+		
+	};
+	bh.couch_url = function(app_name){
+		if(this._couch_url){
+			return this._couch_url;
+		}
+		
+		if(!app_name){
+			app_name = BH_APP_NAME;
+		}
+		
+		var url = "/"+app_name +"/";
+		
+		this._couch_url = url;
+		
+		return this._couch_url;
+		
+		
+	};
+	bh.detect_browser = function(){
+		if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)){ //test for MSIE x.x;
+		 var ieversion=new Number(RegExp.$1); // capture x.x portion and store as a number
+		 if (ieversion>=8)
+		  bh.settings["msie"] = 1;
+		 else if (ieversion>=7)
+		  bh.settings["msie"] = 1;
+		 else if (ieversion>=6)
+		  bh.settings["msie"] = 1;
+		 else if (ieversion>=5)
+		  bh.settings["msie"] = 1;
+		}
+		else
+		 bh.settings["msie"] = 0;
+	};
+	bh.load_settings = function(){
+		var couch_url = bh.couch_url();
+		var settings_url = couch_url + "settings";
+		console.log(settings_url);
+		var options = {
+			url:settings_url,
+			success:function(data) {
+				console.log(data);
+				bh.settings = data;
+			},
+			async:false,
+			dataType:"json"
+		};
+		jQuery.ajax( options );
+	};
 	bh.bootstrap = function(){
+		bh.load_settings();
+		bh.detect_browser();
 		this.load_jquery_through_jsapi = function(){
 	        google.load("jquery", "1");
 			google.load("jqueryui", "1.7.2");
@@ -76,11 +142,11 @@ bh.loader = {
 		bh.logger("inside require", group_name);
 		bh.logger(bh.settings, bh.settings.file_groups);
 		file_group = bh.settings.file_groups[group_name];
-		
-		if(file_group["depends"]){
+		bh.logger("file group desc", file_group);
+		if(file_group["deps"]){
 			bh.logger("We Have some dependencys", file_group["depends"]);
-			for( i in file_group["depends"]){
-				dep_name = file_group["depends"][i];
+			for( i in file_group["deps"]){
+				dep_name = file_group["deps"][i];
 				bh.logger("Do we have it",bh.loader.groups[dep_name]);
 				if(typeof(bh.loader.groups[dep_name]) == "undefined"){
 					bh.logger("inside dep, don't have it asking for it.", dep_name);
@@ -93,7 +159,6 @@ bh.loader = {
 			}
 		}
 
-		bh.logger("Here before checking undefined",typeof(bh.loader.groups[group_name]));
 		if(typeof(bh.loader.groups[group_name]) != "undefined"){
 			bh.logger("we have something by that name",group_name);
 			
