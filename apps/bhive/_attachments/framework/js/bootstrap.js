@@ -56,11 +56,9 @@
 	};
 	bh.load_settings = function(){
 		var settings_url = bh.couch_design_url();
-		console.log(settings_url);
 		var options = {
 			url:settings_url,
 			success:function(data) {
-				console.log(data.data.settings);
 				bh.settings = data.data.settings;
 			},
 			async:false,
@@ -69,15 +67,17 @@
 		jQuery.ajax( options );
 	};
 	bh.bootstrap = function(callback){
-        run_after_base = function(){
-            bh.loadModules(callback);
+		var after_modules = function(){
+			bh.module.drawOnPage();
+			callback();
+		};
+        var run_after_base = function(){
+            bh.loadModules(after_modules);
         };
-        run_after_boot_strap = function(){
-            bh.loader.require("base", run_after_base);
-        };		
+	
 		bh.load_settings();
 		bh.detect_browser();
-		run_after_boot_strap();
+        bh.loader.require("base", run_after_base);
 	};
 	
 bh.loader = {
