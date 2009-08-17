@@ -2,7 +2,6 @@
 (function(){
 	if ( typeof(window.bh) ===  "undefined"){
 		var bh = {};
-		
 	} else {
 		var bh = window.bh;
 	}
@@ -50,102 +49,48 @@
 	};
 	bh.detect_browser = function(){
 		if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)){ //test for MSIE x.x;
-		 var ieversion=new Number(RegExp.$1); // capture x.x portion and store as a number
-		 if (ieversion>=8)
 		  bh.settings["msie"] = 1;
-		 else if (ieversion>=7)
-		  bh.settings["msie"] = 1;
-		 else if (ieversion>=6)
-		  bh.settings["msie"] = 1;
-		 else if (ieversion>=5)
-		  bh.settings["msie"] = 1;
-		}
-		else
+		} else {
 		 bh.settings["msie"] = 0;
+		}
 	};
 	bh.load_settings = function(){
-		var couch_url = bh.couch_url();
-		var settings_url = couch_url + "settings";
+		var settings_url = bh.couch_design_url();
 		console.log(settings_url);
 		var options = {
 			url:settings_url,
 			success:function(data) {
-				console.log(data);
-				bh.settings = data;
+				console.log(data.data.settings);
+				bh.settings = data.data.settings;
 			},
 			async:false,
 			dataType:"json"
 		};
 		jQuery.ajax( options );
 	};
-	bh.bootstrap = function(){
+	bh.bootstrap = function(callback){
+        run_after_base = function(){
+            bh.loadModules(callback);
+        };
+        run_after_boot_strap = function(){
+            bh.loader.require("base", run_after_base);
+        };		
 		bh.load_settings();
 		bh.detect_browser();
-		this.load_jquery_through_jsapi = function(){
-	        google.load("jquery", "1");
-			google.load("jqueryui", "1.7.2");
-			google.setOnLoadCallback(bh.route);
-	    };
-	    if(!bh.settings.load_local_jquery){
-	        bh.loader.require("jsapi",this.load_jquery_through_jsapi);
-	    } else {
-	        bh.logger("loading local jqueryui locally");
-	        bh.loader.require("jqueryui",bh.route);
-	    }
+		run_after_boot_strap();
 	};
 	
-	bh.routeToView = function(){
-		var routes = bh.settings.routes;
-		for(i in routes){
-			route = routes[i];
-			current_path = bh.cache.get("current_path");
-			if(route.path == current_path){
-				bh.logger("Current View is ", route.view);
-				var view = bh["Views"][route.view];
-				view.render();
-			}
-
-		}
-	};
-
-	bh.route = function(){
-		bh.logger("Ready to roll");
-		var current_path = document.location.pathname;
-		bh.logger(bh.settings.root_app_path, current_path);
-		current_path = current_path.replace(bh.settings.root_app_path,"/");
-		bh.cache.set("current_path",current_path);
-		
-		bh.logger("this is the path", current_path);
-
-
-		var routes = bh.settings.routes;
-		for(i in routes){
-			route = routes[i];
-			
-			if(route.path == current_path){
-				bh.logger("Current View is ", route.view);
-				var view = bh.views[route.view];
-				view.render();
-			}
-
-		}
-
-
-
-		return true;
-
-	};
 bh.loader = {
 	
 	groups:{},// This is where we can store data about stuff we loaded.
 	require:function(group_name,callback){
 		bh.logger("inside require", group_name);
-		bh.logger(bh.settings, bh.settings.file_groups);
 		file_group = bh.settings.file_groups[group_name];
 		bh.logger("file group desc", file_group);
 		if(file_group["deps"]){
-			bh.logger("We Have some dependencys", file_group["depends"]);
-			for( i in file_group["deps"]){
+			bh.logger("We Have some dependencys", file_group["deps"]);
+			for(var i in file_group["deps"]){
+				console.info(i);
 				dep_name = file_group["deps"][i];
 				bh.logger("Do we have it",bh.loader.groups[dep_name]);
 				if(typeof(bh.loader.groups[dep_name]) == "undefined"){
@@ -295,43 +240,7 @@ bh.cache = {
 	},
 	"_store":{}
 };
-bh.localCachedAjax = {
-	conf:{
-		type: "GET", 
-		dataType: "json"
-	},
-	fetching:{},
-	get:function(cache_key,conf_object){
-		
-		var in_cache = bh.cache.get(cache_key);
-		if(in_cache){
-			conf_object.success();
-		}
-		if(bh.cachedGetter["fetching"][cache_key]){
-			var recall = function(){
-				bh.cachedGetter.get(cache_key,conf_object);
-			};
-			setTimeout(recall,50);
-		}
-		bh.cachedGetter["fetching"][cache_key] = 1;
-		var conf = jQuery.extend(bh.cachedGetter["conf"], conf_object);
-		var success_func = conf.success;
-		conf.success = function(data){
-			bh.cache.set(cache_key,data);
-			bh.cachedGetter["fetching"][cache_key] = 0;
-			success_func();
-		};
-		jQuery.ajax(conf);
-		
-	}
-};
 
-bh.views = {
-	"main": {
-		render:function(){
-			document.write("Hello");
-		}
-	}
-};
+
 window.bh = bh;
 })();

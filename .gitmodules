@@ -1,0 +1,3 @@
+[submodule "apps/bhive/_attachments/libs/taffydb"]
+	path = apps/bhive/_attachments/libs/taffydb
+	url = git://github.com/typicaljoe/taffydb.git

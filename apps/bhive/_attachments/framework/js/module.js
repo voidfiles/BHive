@@ -10,7 +10,7 @@
 	
 	
 	bh.module.addModule = function(type,name,ref){
-		bh.logger("adding modules",type,name,ref)
+		bh.logger("adding modules",type,name,ref);
 		bh._modules.push(
 			{
 				name:name,
@@ -20,6 +20,23 @@
 		);
 	};
 	bh.module.types = {};
+	
+	bh.module.types.module = function(ref){
+		var last_module = jQuery(".unassigned:first");
+		var template = jQuery("#module_template").html();
+		var replacement = {
+			hd:ref.header,
+			bd:ref.content,
+			ft:""
+		};
+		var conf = {
+			data:replacement,
+			template:template
+		};
+		bh.logger(last_module);
+		last_module.html(bh.template.render(conf));
+		last_module.removeClass("unassigned");
+	};
 	bh.module.types.tab = function(ref){
 	   var num_of_tabs = jQuery("#module_1 .main_module ul li").size();
 	   var text = "<li><a href=\"#tabs-{tab_number}\">{tab_title}</a></li>";
@@ -55,6 +72,12 @@
 			renderer = bh.module.types[mod.type];
 			renderer(output);
 		}
+		$(function() {
+			$(".row-modules").sortable({
+				connectWith: '.row-modules'
+			}).disableSelection();
+		});
+		
 	};
 	window.bh = bh;
 })();
