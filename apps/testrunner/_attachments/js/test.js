@@ -81,12 +81,52 @@ jQuery(document).ready(function(){
 		bh.settings.modules.push("mock_module");
 		bh.settings.modules.push("mock_module2");
 		var callback = function(){
-			console.info("did we load two", bh._modules.length );
 			ok((bh._modules.length == 2), "loaded two module");
 			window.bh = local_bh_copy;
 			start();
 		};
 		bh.loader.require("base", function(){
+			bh.loadModules(callback);
+		});
+		stop();
+		
+	});
+	
+	module("Model");
+	
+	test("Create model", function() {
+		expect( 2 );
+		var local_bh_copy = window.bh;
+		bh.load_settings();
+		bh.detect_browser();
+		callback = function(){
+			
+			
+			TestModel = {
+				fields:{
+					first_name:new bh.model.fields.String({optional:true}),
+					last_name:new bh.model.fields.String({optional:false})
+				}
+			};
+			
+			TestModel = bh.model.blessModel(TestModel);
+			
+			bh.logger("what do we get back",TestModel);
+			ok(TestModel.objects, " we inserted an object manager");
+			
+			
+			test_model = TestModel.create({frist_name:"alex",last_name:"kessinger"});
+			
+			ok(test_model, " we created an object");
+			
+			test_model = TestModel.create({frist_name:"alex",last_name:""});
+			
+			
+			ok(test_model, " we failed validation");
+			start();
+		};
+		
+		bh.loader.require("model", function(){
 			bh.loadModules(callback);
 		});
 		stop();

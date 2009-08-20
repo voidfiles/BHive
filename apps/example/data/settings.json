@@ -50,13 +50,24 @@
                "module"
            ]
        },
-       "data": {
+       "jquery.couch": {
            "js": [
-               "/bhive/_design/bhive/framework/data.js"
+               "/bhive/_design/bhive/libs/jquery.couch.js"
            ],
            "css": [
            ],
            "deps": [
+           ]
+       },
+       "model": {
+           "js": [
+               "/bhive/_design/bhive/framework/js/model.js"
+           ],
+           "css": [
+           ],
+           "deps": [
+		       "jquery.couch",
+			   "base"
            ]
        }
    },

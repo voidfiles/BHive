@@ -14,6 +14,9 @@ Forward looking, HTML 5, canvas, location will all be supported.
 Updates
 =======
 
+2009-08-19
+Started looking at data models. How to build them, the hardest part is to make it semantically make sense. 
+
 2009-08-10
 Got it to a point where there is a simple module. Lots of things that are wrong still. There are three basic apps. bhive which is the main framework app, all installations will have to have this. example app, is where I am doing an example app. Help\_module, is an app that really only provides a module. I am not sure if this is how I would want modules to end up, but for now I think it works. I am not sure how I will end up de-coupling this stuff, mayby I can't.  The urls are ugly when you use couchdb, not sure if there is a like a mod\_rerwite or anything like that. 
 
