@@ -2,7 +2,6 @@
 	var bh = window.bh;
 
 	bh.loadModules = function(callback){
-		console.log("inside loading modules");
 		var prev = "";
 		var module_name = "";
 		if(bh.settings.modules.length > 0){
@@ -23,7 +22,6 @@
 		} else {
 			callback();
 		}
-		console.log("done loading modules");
 	};
 	window.bh = bh;
 })();

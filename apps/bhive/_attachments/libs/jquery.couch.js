@@ -198,7 +198,7 @@
               if (req.status == 201) {
                 doc._id = resp.id;
                 doc._rev = resp.rev;
-                if (options.success) options.success(resp);
+                if (options.success) options.success(resp,doc);
               } else if (options.error) {
                 options.error(req.status, resp.error, resp.reason);
               } else {

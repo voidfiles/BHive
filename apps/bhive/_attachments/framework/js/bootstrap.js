@@ -6,13 +6,14 @@
 		var bh = window.bh;
 	}
 	
-	bh.logger = function(stuff){
+	b = bh; // protects the defention of the logger function against mass comment, uncomments
+	b.logger = function(stuff){
 		if(window["console"] !== undefined && bh.settings.debug){
 			console.log.apply(console,arguments);
 		}
 
 	};
-	
+	bh = b;
 	bh.couch_design_url = function(app_name){
 		if(this._couch_url){
 			return this._couch_url;
@@ -84,19 +85,18 @@ bh.loader = {
 	
 	groups:{},// This is where we can store data about stuff we loaded.
 	require:function(group_name,callback){
-		bh.logger("inside require", group_name);
+		//bh.logger("inside require", group_name);
 		file_group = bh.settings.file_groups[group_name];
-		bh.logger("file group desc", file_group);
+		//bh.logger("file group desc", file_group);
 		if(file_group["deps"]){
-			bh.logger("We Have some dependencys", file_group["deps"]);
+			//bh.logger("We Have some dependencys", file_group["deps"]);
 			for(var i in file_group["deps"]){
-				console.info(i);
 				dep_name = file_group["deps"][i];
-				bh.logger("Do we have it",bh.loader.groups[dep_name]);
+				//bh.logger("Do we have it",bh.loader.groups[dep_name]);
 				if(typeof(bh.loader.groups[dep_name]) == "undefined"){
-					bh.logger("inside dep, don't have it asking for it.", dep_name);
+					//bh.logger("inside dep, don't have it asking for it.", dep_name);
 					bh.loader.require(dep_name, function(){
-						bh.logger("Were done loading", dep_name,"Now were going to load", group_name);
+						//bh.logger("Were done loading", dep_name,"Now were going to load", group_name);
 						bh.loader.require(group_name,callback);
 					});
 					return;
@@ -105,19 +105,19 @@ bh.loader = {
 		}
 
 		if(typeof(bh.loader.groups[group_name]) != "undefined"){
-			bh.logger("we have something by that name",group_name);
+			//bh.logger("we have something by that name",group_name);
 			
 			if(bh.loader.groups[group_name]["loaded"]){
-				bh.logger("Dep:", group_name,"has been loaded run callback");
+				//bh.logger("Dep:", group_name,"has been loaded run callback");
 				callback();
 				return;
 			}
 			if(bh.loader.groups[group_name]["loading"]){
-				bh.logger(group_name," is loading looping", group_name);
+				//bh.logger(group_name," is loading looping", group_name);
 				redo_in_some_time = function(){
 					bh.loader.require(group_name,callback);
 				};
-				bh.logger("Would set re-try here.");
+				//bh.logger("Would set re-try here.");
 				setTimeout(redo_in_some_time,50);
 				return;
 			}
@@ -130,7 +130,7 @@ bh.loader = {
 		bh.loader.groups[group_name]["ind_callback"] = [];
 		bh.loader.groups[group_name]["ind_status"] = [];
 		
-		bh.logger(bh.loader.groups[group_name]);
+		//bh.logger(bh.loader.groups[group_name]);
 		
 		
 		
@@ -147,7 +147,7 @@ bh.loader = {
 			
 			url  = file_group.js[i];
 			script = bh.loader.create_js(url);
-			bh.logger("Creating DOM element for js file",url, script);
+			//bh.logger("Creating DOM element for js file",url, script);
 			var headID = document.getElementsByTagName("head")[0]; 
 			headID.appendChild(script);
 			
@@ -155,7 +155,7 @@ bh.loader = {
 				
 				var index = b;
 				//var group_name = group_name;
-				bh.logger("callback being called", index, group_name);
+				//bh.logger("callback being called", index, group_name);
 				bh.loader.groups[group_name]["ind_status"][index] = 1;
 				all_done = 1;
 				for(c in bh.loader.groups[group_name]["ind_status"]){
@@ -164,7 +164,7 @@ bh.loader = {
 					}
 				}
 				if(all_done){
-					bh.logger("all files reporting done calling the main callback of group_name ",group_name, callback);
+					//bh.logger("all files reporting done calling the main callback of group_name ",group_name, callback);
 					all_done_callback = bh.loader.groups[group_name]["main_callback"];
 					bh.loader.groups[group_name]["loaded"] = 1;
 					bh.loader.groups[group_name]["loading"] = 0;
@@ -174,17 +174,17 @@ bh.loader = {
 			if(!bh.settings.msie){
 				
 				script.onload = bh.loader.groups[group_name]["ind_callback"][b];
-				bh.logger("Created NON-IE based callback", b);
+				//bh.logger("Created NON-IE based callback", b);
 			} else {
 				
 				script.onreadystatechange = function () {
-					bh.logger("Non ID callback being called", b);
+					//bh.logger("Non ID callback being called", b);
 					if (script.readyState == 'loaded' || script.readyState == 'complete') {
 						callback = bh.loader.groups[group_name]["ind_callback"][b];
 						callback();
 				    }
 				};
-				bh.logger("Created IE based callback", b);
+				//bh.logger("Created IE based callback", b);
 			}
 		}
 		

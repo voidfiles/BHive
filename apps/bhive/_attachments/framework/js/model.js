@@ -6,7 +6,7 @@
 	
 	bh.model = {};
 	
-	
+	bh.model.db = jQuery.couch.db(BH_APP_NAME);
 	bh.model.blessModel = function(modelFunction){
 		function ObjectManager(){
 			this.name = "model";
@@ -28,21 +28,53 @@
 		};
 		
 		modelFunction.create = function(object){
-			bh.logger("what are the fields", this.fields);
-			for(var b in this.fields){
-				field = this.fields[b];
-				if(!field.validate(object[b])){
-					bh.logger("invalid");
-					return false;
-				}
-			}
+
 			
-			return true;
+			var document_instance = {
+				data: object,
+				save: function(callback){
+					var callback = this.afterSave(callback);
+					modelFunction.save(this.data,callback);
+				},
+				afterSave:function(callback){
+					return function(resp,doc){
+						this.data = doc;
+						callback(resp,doc);
+					};
+				},
+				validate:function(){
+					for(var b in this.fields){
+						field = this.fields[b];
+						if(!field.validate(this.data[b])){
+							return false;
+						}
+					}
+					
+					return true;
+				},
+				"delete": function(callback){
+					if(!this.data._id){
+						callback();
+					}
+					var options = {
+						success: callback
+					};
+					bh.model.db.removeDoc(this.data, options);
+
+				fields: this.fields
+			};
+			
+			
+			
+			return document_instance;
 		};
 		
-		modelFunction.save = function(object){
+		modelFunction.save = function(object, callback){
 			// Send to db
-			bh.logger("saving", object);
+			var options = {
+				success: callback
+			};
+			bh.model.db.saveDoc(object,options);
 		};
 		
 		return modelFunction;
@@ -63,10 +95,9 @@
 	
 	bh.model.fields = {};
 	bh.model.fields.String = function(conf){
-		this.optional = conf.optional || true;
-		
+		// Defaults
+		this.optional = true;		
 		this.validate = function(value){
-			bh.logger("validating value:",value);
 			if(!this.optional && value === ""){
 				throw "Error this is not an optional field";
 				return false;
@@ -74,26 +105,10 @@
 			
 			return true;
 		};
+		this.editWidget =  bh.model.widgets.textbox;
+		this.displayWidget = bh.model.widgets.span;
+		var self = this;
+		self = jQuery.extend(self,conf);
+		return self;
 	};
-	
-	bh.model.types = {};
-	bh.model.types.string = {
-		name:"String data type",
-		validator:function(element){
-			return true;
-		},
-		entryWidget:bh.model.widgets.textbox,
-		displayWidget:bh.model.widgets.span
-	};
-	
-
-	
-	/*
-	model = {
-		fields: {
-			first_name:bh.model.types.string,
-			last_name:bh.model.types.string
-		}
-	}
-	*/
 })();

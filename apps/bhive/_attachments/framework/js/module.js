@@ -10,7 +10,7 @@
 	
 	
 	bh.module.addModule = function(type,name,ref){
-		bh.logger("adding modules",type,name,ref);
+		//bh.logger("adding modules",type,name,ref);
 		bh._modules.push(
 			{
 				name:name,
@@ -33,7 +33,7 @@
 			data:replacement,
 			template:template
 		};
-		bh.logger(last_module);
+		//bh.logger(last_module);
 		last_module.html(bh.template.render(conf));
 		last_module.removeClass("unassigned");
 	};
@@ -64,11 +64,11 @@
 		
 	};
 	bh.module.drawOnPage = function(){
-		bh.logger("going to draw on page",bh._modules);
+		//bh.logger("going to draw on page",bh._modules);
 		for(var x in bh._modules){
 			mod = bh._modules[x];
 			var output = mod.ref.render();
-			bh.logger("output of ",mod.name,output);
+			//bh.logger("output of ",mod.name,output);
 			renderer = bh.module.types[mod.type];
 			renderer(output);
 		}
