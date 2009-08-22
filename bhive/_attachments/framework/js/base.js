@@ -1,5 +1,4 @@
-(function(){
-	var bh = window.bh;
+(function(bh){
 
 	bh.loadModules = function(callback){
 		var prev = "";
@@ -7,15 +6,15 @@
 		if(bh.settings.modules.length > 0){
 			for(module_name in bh.settings.modules){
 				module_name = bh.settings.modules[module_name];
-				js = "/" + module_name +"/_design/" + module_name +"/js/module.js";
-				css = "/" + module_name +"/_design/" + module_name +"/css/module.css";
+				js = bh.app_name_dep("couch_design_url")+"modules/" + module_name + "/module.js";
 				bh.settings.file_groups[module_name] = {
 					js:[js],
-					css:[css]
+					css:[]
 				};
 				if(prev){
 					bh.settings.file_grous[module_name]["deps"] = [prev];
 				}
+				prev = module_name;
 			}
 
 			bh.loader.require(module_name, callback);
@@ -23,5 +22,4 @@
 			callback();
 		}
 	};
-	window.bh = bh;
-})();
+})(window.bh);

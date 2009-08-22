@@ -8,46 +8,44 @@
 	
 	b = bh; // protects the defention of the logger function against mass comment, uncomments
 	b.logger = function(stuff){
-		if(window["console"] !== undefined && bh.settings.debug){
+		if(window["console"] !== undefined && ( (bh && bh.settings && bh.settings.debug) || DEBUG ) ){
 			console.log.apply(console,arguments);
 		}
 
 	};
 	bh = b;
-	bh.couch_design_url = function(app_name){
-		if(this._couch_url){
-			return this._couch_url;
+	
+	bh.app_name_dep = function(what){
+		var cache_name = "_" + what;
+		if(this[cache_name]){
+			return this[cache_name];
 		}
 		
-		if(!app_name){
-			app_name = BH_APP_NAME;
+		switch(what){
+			case "base_app_name":
+		  		var location = document.location;
+				var base_app_name = document.location.href.split('/')[3];
+				this[cache_name]  = base_app_name;
+		  		break;
+			case "couch_design_url":
+				var base_database_name = bh.app_name_dep("base_app_name");
+				this[cache_name]  = "/"+base_database_name+"/_design/"+base_database_name+"/";
+		  		break;
+			case "couch_url":
+				var base_database_name = bh.app_name_dep("base_app_name");
+				this[cache_name]  = "/"+base_database_name+"/";
+		  		break;
+			case "template_url":
+				var design_doc = bh.app_name_dep("couch_design_url");
+				this[cache_name]  = design_doc + "templates/";
+		  		break;
+		default:
+		  throw "done have "+ what + "handerl in bh.app_name_dep";
 		}
 		
-		var url = "/"+app_name +"/_design/"+app_name + "/";
-		
-		this._couch_url = url;
-		
-		return this._couch_url;
-		
-		
+		return this[cache_name];
 	};
-	bh.couch_url = function(app_name){
-		if(this._couch_url){
-			return this._couch_url;
-		}
-		
-		if(!app_name){
-			app_name = BH_APP_NAME;
-		}
-		
-		var url = "/"+app_name +"/";
-		
-		this._couch_url = url;
-		
-		return this._couch_url;
-		
-		
-	};
+
 	bh.detect_browser = function(){
 		if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)){ //test for MSIE x.x;
 		  bh.settings["msie"] = 1;
@@ -56,7 +54,7 @@
 		}
 	};
 	bh.load_settings = function(){
-		var settings_url = bh.couch_design_url();
+		var settings_url =  bh.app_name_dep("couch_design_url");
 		var options = {
 			url:settings_url,
 			success:function(data) {
@@ -67,18 +65,110 @@
 		};
 		jQuery.ajax( options );
 	};
+	bh.multi_load_template = function(options) {    
+
+	    var settings = jQuery.extend({
+	        callback : function() {},
+	        templates : [],
+			done: 0,
+	        data : []
+	    }, options || {});
+		settings.url = bh.app_name_dep("template_url") + settings.templates[settings.done];
+	    //load the json, passing up the current 'number'
+	    //of the content to load
+	    $.ajax({
+	        url : settings.url,
+	        dataType: 'html',        
+	        success: function(result) {            
+
+	            //add the response to the data
+	            settings.data.push(result);
+
+	            //increment the counter of how many files have been done
+	            settings.done++;
+				
+	            //
+	            if(settings.done < settings.templates.length) {
+	                bh.multi_load_template(settings);
+	            } else {
+	                settings.callback(settings.data);
+	            }
+
+	        }        
+	    });
+
+	};
+	bh.return_template = function(template_path,callback){
+		if(bh.cache.get(template_path)){
+			return bh.cache.get(template_path);
+		}
+		var template_url = bh.app_name_dep("template_url") + template_path;
+		var local_callback = function(data){
+			bh.cache.set(template_path,data);
+			callback(data);
+		};
+		jQuery.get(template_url,local_callback,"html");
+	};
+	bh.load_template = function(jQuery_selector_string,template_path,callback){
+		var template_url = bh.app_name_dep("template_url") + template_path;
+		bh.logger(template_url,callback);
+		jQuery.get(template_url,function(data,stat){
+			jQuery(jQuery_selector_string).append(data);
+			callback();
+		},"html");
+	};
+	var d = 0;
+	bh.load_layout = function(callback){
+		
+
+		var rows = function(){
+			var templates = [];
+			for(var b in bh.settings.starting_layout){
+				var template_name = bh.settings.starting_layout[b];
+				var path = "default/" + template_name;
+				templates.push(path);
+			}
+			var options = {
+				templates:templates,
+				callback:function(data){
+					for(var d in data){
+						var html = data[d];
+						jQuery("#main_module_container").append(html);
+					}
+					callback();
+				}
+			};
+			
+			bh.multi_load_template(options);
+		};
+		
+		
+		bh.load_template("body","default/main_body.html",rows);
+	
+		
+	};
 	bh.bootstrap = function(callback){
 		var after_modules = function(){
-			bh.module.drawOnPage();
-			callback();
+			bh.module.refreshView();
+			$(".tab-container").tabs();
+			//callback();
 		};
         var run_after_base = function(){
             bh.loadModules(after_modules);
         };
+		
+		var run_after_ui_load = function(){
+			bh.loader.require("base", run_after_base);
+		};
+		var run_after_layout = function(){
+			bh.loader.require("jqueryui", run_after_ui_load );
+			
+		};
 	
 		bh.load_settings();
 		bh.detect_browser();
-        bh.loader.require("base", run_after_base);
+		bh.load_layout(run_after_layout);
+        
 	};
 	
 bh.loader = {
@@ -244,3 +334,5 @@ bh.cache = {
 
 window.bh = bh;
 })();
+
+bh.bootstrap();
