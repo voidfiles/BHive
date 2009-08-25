@@ -8,16 +8,18 @@
 		return bh._modules;
 	};
 	
-	
+	bh.module.includeCSS = function(css_href){
+		jQuery("head").append("<link rel=\"stylesheet\" href=\""+css_href+"\" type=\"text/css\" media=\"screen\" />");
+	};
 	bh.module.addModule = function(module){
 		//bh.logger("adding modules",type,name,ref);
 		bh._modules.push(module);
 	};
 	bh.module.types = {};
-	
+
 	bh.module.types.module = function(ref,view){
 		
-		bh.return_template("default/module.html", function(data){
+		bh.template.return_template("default/module.html", function(data){
 			var last_module = jQuery(".unassigned:first");
 			var template = data;
 			var replacement = {

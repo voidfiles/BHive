@@ -12,7 +12,7 @@
 					css:[]
 				};
 				if(prev){
-					bh.settings.file_grous[module_name]["deps"] = [prev];
+					bh.settings.file_groups[module_name]["deps"] = [prev];
 				}
 				prev = module_name;
 			}

@@ -1,5 +1,5 @@
 
-(function(){ 
+(function(bh){ 
 	
 	var module_object = {
 		name:"Example",
@@ -20,6 +20,6 @@
 		}
 	};
 
-	window.bh.module.addModule(module_object);
-})();
+	bh.module.addModule(module_object);
+})(window.bh);
 

@@ -1,5 +1,6 @@
 jQuery(document).ready(function(){
 
+	bh.logger("Inside tests",module,test);
 	module("Bootstrap");
 	
 	test("Load Settings", function() {
@@ -182,7 +183,7 @@ jQuery(document).ready(function(){
 	
 
 
-
+	bh.logger("end of tests");
 	
 	
 

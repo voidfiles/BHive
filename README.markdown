@@ -1,5 +1,5 @@
-Javascript Application Platform
-================================
+BHive was Javascript Application Platform 
+==========================================
 
 A very bland name for sure. I will change it as I define it better. This is the best I can do for now. I want to create and open source enterprize app platform. Something like salesforce but open source. 
 
@@ -10,6 +10,50 @@ It will be all javascript. Except for building packages I might use some python 
 It will be based on jquery. 
 
 Forward looking, HTML 5, canvas, location will all be supported.
+
+
+The API as I see it - developing as we go
+------------------------------------------
+* bh
+    * Functions here are very basic like bootstrap.
+* bh.document
+    * bh.document.Field - The model of a field
+        * Field.validate() - can validate the field
+        * Field.value - the actually value of the field
+        * Field.type - the type of the field 
+        * Field.options - on base a list of options and defaults, on an instance the current options for this field
+    * bh.document.Manager - A manger object for a group of documents base on a model.
+        * Manager.get - gets an object by id
+        * Manager.delete - delets an object by id
+        * Manager.create - create an document instance 
+    * bh.document.Model - The model for an individual document.
+        * Model.x - x will represent any fields on the document that you set. 
+        * Model.validate - will validate the model
+        * Model.save - will validate and then save the object if no validation errors
+        * Model.delete - delete this instance of the model
+    
+
+* bh.modules - the base module manager. 
+    * bh.modules.Module 
+        * a basic module object that all modules should inherit from
+    * bh.modules.ModuleManager
+        * Will manage all the modules in the system 
+    * bh.modules.views - all the different views that modules can export 
+        * bh.modules.views.Block
+            * A block type can be moved around on the page
+        * bh.modules.views.TabbedBlock
+            * Usually one of these per page contains a number of tabs
+        * bh.modules.views.Tab
+            * A tab that should reside inside of a TabbedBlock 
+        * bh.modules.view.Page
+            * A page is the base container type for all others
+            
+        
+    
+
+    
+        
+    
 
 Updates
 =======

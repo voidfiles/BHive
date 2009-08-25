@@ -115,7 +115,8 @@
          
     },
 	"modules": [     
-		"example" 
+		"example",
+		"testrunner"
     ],
     "starting_layout": [
 		"row_tab_module.html",

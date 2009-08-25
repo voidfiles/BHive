@@ -65,58 +65,7 @@
 		};
 		jQuery.ajax( options );
 	};
-	bh.multi_load_template = function(options) {    
 
-	    var settings = jQuery.extend({
-	        callback : function() {},
-	        templates : [],
-			done: 0,
-	        data : []
-	    }, options || {});
-		settings.url = bh.app_name_dep("template_url") + settings.templates[settings.done];
-	    //load the json, passing up the current 'number'
-	    //of the content to load
-	    $.ajax({
-	        url : settings.url,
-	        dataType: 'html',        
-	        success: function(result) {            
-
-	            //add the response to the data
-	            settings.data.push(result);
-
-	            //increment the counter of how many files have been done
-	            settings.done++;
-				
-	            //
-	            if(settings.done < settings.templates.length) {
-	                bh.multi_load_template(settings);
-	            } else {
-	                settings.callback(settings.data);
-	            }
-
-	        }        
-	    });
-
-	};
-	bh.return_template = function(template_path,callback){
-		if(bh.cache.get(template_path)){
-			return bh.cache.get(template_path);
-		}
-		var template_url = bh.app_name_dep("template_url") + template_path;
-		var local_callback = function(data){
-			bh.cache.set(template_path,data);
-			callback(data);
-		};
-		jQuery.get(template_url,local_callback,"html");
-	};
-	bh.load_template = function(jQuery_selector_string,template_path,callback){
-		var template_url = bh.app_name_dep("template_url") + template_path;
-		bh.logger(template_url,callback);
-		jQuery.get(template_url,function(data,stat){
-			jQuery(jQuery_selector_string).append(data);
-			callback();
-		},"html");
-	};
 	var d = 0;
 	bh.load_layout = function(callback){
 		
@@ -139,11 +88,11 @@
 				}
 			};
 			
-			bh.multi_load_template(options);
+			bh.template.multi_load_template(options);
 		};
 		
 		
-		bh.load_template("body","default/main_body.html",rows);
+		bh.template.load_template("body","default/main_body.html",rows);
 	
 		
 	};
@@ -228,18 +177,12 @@ bh.loader = {
 		
 		for(i in file_group.css){
 			url = file_group.css[i];
-			link = bh.loader.create_css(url);
-			var headID = document.getElementsByTagName("head")[0]; 
-			headID.appendChild(link);
+			jQuery("<link />").attr("type","text/css").attr("href",url).appendTo("head");
 		}
 		
 		for(i in file_group.js){
 			
 			url  = file_group.js[i];
-			script = bh.loader.create_js(url);
-			//bh.logger("Creating DOM element for js file",url, script);
-			var headID = document.getElementsByTagName("head")[0]; 
-			headID.appendChild(script);
 			
 			bh.loader.groups[group_name]["ind_callback"][b] = function(){
 				
@@ -261,54 +204,8 @@ bh.loader = {
 					all_done_callback();
 				}
 			};
-			if(!bh.settings.msie){
-				
-				script.onload = bh.loader.groups[group_name]["ind_callback"][b];
-				//bh.logger("Created NON-IE based callback", b);
-			} else {
-				
-				script.onreadystatechange = function () {
-					//bh.logger("Non ID callback being called", b);
-					if (script.readyState == 'loaded' || script.readyState == 'complete') {
-						callback = bh.loader.groups[group_name]["ind_callback"][b];
-						callback();
-				    }
-				};
-				//bh.logger("Created IE based callback", b);
-			}
+			jQuery.getScript( url, bh.loader.groups[group_name]["ind_callback"][b] );
 		}
-		
-		
-	},
-	createDom: function(conf_object){
-		// conf_object should have node type and attributes
-		// ex: {"node_type":"link"}
-		var elem = document.createElement(conf_object["node_type"]);
-		for( var i in node_object.attrs){
-			elem[i] = node_object.attrs[i];
-		}
-		
-		return elem;
-	},
-	"create_css": function(url){
-		var link = document.createElement("link");
-		link.href    = url;
-		link.type    = "text/css";
-		link.charset = "utf-8";
-		link.media   = "screen";
-		link.rel     = "stylesheet";
-		  // add script tag to head element
-		
-		return link;
-
-	},
-	"create_js":function(url){
-		var script = document.createElement("script");
-		script.src  = url;
-		script.type = "text/javascript";
-		
-		return script;
-
 	}
 };
 bh.cache = {

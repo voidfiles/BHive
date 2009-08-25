@@ -6,6 +6,61 @@
 	bh.template.storeTemplate = function(name,data){
 		bh._templates[name] = data;
 	};
+	bh.template.multi_load_template = function(options) {    
+
+	    var settings = jQuery.extend({
+	        callback : function() {},
+	        templates : [],
+			done: 0,
+	        data : []
+	    }, options || {});
+		settings.url = bh.app_name_dep("template_url") + settings.templates[settings.done];
+	    //load the json, passing up the current 'number'
+	    //of the content to load
+	    $.ajax({
+	        url : settings.url,
+	        dataType: 'html',        
+	        success: function(result) {            
+
+	            //add the response to the data
+	            settings.data.push(result);
+
+	            //increment the counter of how many files have been done
+	            settings.done++;
+				
+	            //
+	            if(settings.done < settings.templates.length) {
+	                bh.multi_load_template(settings);
+	            } else {
+	                settings.callback(settings.data);
+	            }
+
+	        }        
+	    });
+
+	};
+	bh.template.return_template = function(template_path,callback){
+		if(bh.cache.get(template_path)){
+			return bh.cache.get(template_path);
+		}
+		var template_url = bh.app_name_dep("template_url") + template_path;
+		var local_callback = function(data){
+			bh.cache.set(template_path,data);
+			callback(data);
+		};
+		jQuery.get(template_url,local_callback,"html");
+	};
+	bh.template.load_template = function(jQuery_selector_string,template_path,callback){
+		var template_url = bh.app_name_dep("template_url") + template_path;
+		bh.logger(template_url,callback);
+		jQuery.get(template_url,function(data,stat){
+			jQuery(jQuery_selector_string).append(data);
+			callback();
+		},"html");
+	};
+	
+	
+	
 	bh.template.render = function(conf){
 		// conf = {data:Object,tempalte_name:String,template:String}
 		if(conf.template_name){
