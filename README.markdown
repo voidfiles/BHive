@@ -26,11 +26,11 @@ The API as I see it - developing as we go
         * Manager.get - gets an object by id
         * Manager.delete - delets an object by id
         * Manager.create - create an document instance 
-    * bh.document.Model - The model for an individual document.
-        * Model.x - x will represent any fields on the document that you set. 
-        * Model.validate - will validate the model
-        * Model.save - will validate and then save the object if no validation errors
-        * Model.delete - delete this instance of the model
+    * bh.document.Document - The model for an individual document.
+        * Document.data.x - x will represent any fields on the document that you set. 
+        * Document.validate - will validate the model
+        * Document.save - will validate and then save the object if no validation errors
+        * Document.delete - delete this instance of the model
     
 
 * bh.modules - the base module manager. 
@@ -57,6 +57,10 @@ The API as I see it - developing as we go
 
 Updates
 =======
+
+2009-08-30
+----------
+I have a working testrunner. I am using qunit. I found that problem I have is that my api was chaning so rapidly my test cases weren't helpful.  I am also relizing that I need to integrate some kind of dom tests, or something that can check look and feel. 
 
 2009-08-22
 ----------

@@ -113,10 +113,14 @@
 			bh.loader.require("jqueryui", run_after_ui_load );
 			
 		};
+		
+		var run_after_template = function(){
+			bh.load_layout(run_after_layout);
+		};
 	
 		bh.load_settings();
 		bh.detect_browser();
-		bh.load_layout(run_after_layout);
+		bh.loader.require("template", run_after_template);
         
 	};
 	
@@ -176,8 +180,9 @@ bh.loader = {
 		var b = 0; 
 		
 		for(i in file_group.css){
-			url = file_group.css[i];
-			jQuery("<link />").attr("type","text/css").attr("href",url).appendTo("head");
+			var url = file_group.css[i];
+			var string  = "<link type=\"text/css\" href=\""+url+"\" rel=\"stylesheet\" />"; 
+			jQuery("head").append(string);
 		}
 		
 		for(i in file_group.js){
@@ -222,7 +227,7 @@ bh.cache = {
 		return ret_var;
 		
 	},
-	"delete":function(key){
+	"del":function(key){
 		delete this["_store"][key];
 	},
 	"_store":{}

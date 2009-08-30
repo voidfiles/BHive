@@ -95,11 +95,11 @@
              
         },
         
-		"model": 
+		"document": 
         {
              "js": 
             [
-                 "/bhive/_design/bhive/framework/js/model.js" 
+                 "/bhive/_design/bhive/framework/js/document.js" 
             ],
              "css": 
             [
@@ -115,8 +115,7 @@
          
     },
 	"modules": [     
-		"example",
-		"testrunner"
+		"example"
     ],
     "starting_layout": [
 		"row_tab_module.html",

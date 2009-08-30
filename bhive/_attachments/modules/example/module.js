@@ -20,6 +20,7 @@
 		}
 	};
 
+
 	bh.module.addModule(module_object);
 })(window.bh);
 

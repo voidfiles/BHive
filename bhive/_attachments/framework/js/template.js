@@ -30,7 +30,7 @@
 				
 	            //
 	            if(settings.done < settings.templates.length) {
-	                bh.multi_load_template(settings);
+	                bh.template.multi_load_template(settings);
 	            } else {
 	                settings.callback(settings.data);
 	            }
