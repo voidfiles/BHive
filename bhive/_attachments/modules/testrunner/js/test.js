@@ -54,17 +54,25 @@ jQuery(document).ready(function(){
 		
 
 		var test_docs = function(){
-			var fields = {
-				name: new bh.document.fields.StringField({optional:false}),
-				company: new bh.document.fields.StringField({max_length:25})
-			};
-			var DocumentModel = new bh.document.Manager(fields);
-			ok(DocumentModel, "created a document manager");
-			var doc = DocumentModel.create({
+
+			
+			var DocumentManager = bh.document.Manager.extend({
+				init: function(){
+					var fields = {
+						name: new bh.document.fields.StringField( {optional:false} ),
+						company: new bh.document.fields.StringField( {max_length:25} )
+					};
+					this._super(fields);
+				}
+			});
+			var doc_manager = new DocumentManager();
+			
+			
+			ok(doc_manager, "created a document manager");
+			var doc = doc_manager.create({
 				name:"william",
 				company:"browns"
 			});
-			console.log(doc.data._id);
 			ok( (doc.data._id == undefined), "created a document but not saved yet");
 			var saved_doc = function(resp,doc){
 				ok( (doc.data._id != undefined), "created a document and saved yet");
@@ -73,7 +81,7 @@ jQuery(document).ready(function(){
 					doc.del();
 					start();
 				};
-				DocumentModel.get(doc.data._id, got_doc);
+				doc_manager.get(doc.data._id, got_doc);
 			};
 			doc.save(saved_doc);
 		};

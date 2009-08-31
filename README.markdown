@@ -58,6 +58,10 @@ The API as I see it - developing as we go
 Updates
 =======
 
+2009-08-31
+-----------
+Chose an inhertiance model described hear, http://ejohn.org/blog/simple-javascript-inheritance/, so far easy to understand. Been digging through a lot of JS I really want to know how others are doing this stuff here.
+
 2009-08-30
 ----------
 I have a working testrunner. I am using qunit. I found that problem I have is that my api was chaning so rapidly my test cases weren't helpful.  I am also relizing that I need to integrate some kind of dom tests, or something that can check look and feel. 
